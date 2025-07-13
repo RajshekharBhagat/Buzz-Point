@@ -79,16 +79,6 @@ export async function PATCH(req: Request) {
 
 export async function GET(req: Request) {
     try {
-        const session = await getAuthSession();
-        if(!session) {
-            return new Response(
-               JSON.stringify({
-                  success: false,
-                  message: "Unauthorized Request",
-               }),
-               { status: 401 }
-            );
-        }
         const url = new URL(req.url);
         const postId = url.searchParams.get('postId');
         if(!postId) {

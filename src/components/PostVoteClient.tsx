@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { useCustomToast } from "@/hooks/use-custom-toast";
 import { cn } from "@/lib/utils";
 import { PostVoteRequestType } from "@/lib/validators/post";
@@ -8,6 +8,7 @@ import axios from "axios";
 import { ThumbsDownIcon, ThumbsUpIcon } from "lucide-react";
 import { FC, useEffect, useState } from "react";
 import { Button } from "./ui/button";
+import { Session } from "next-auth";
 
 type VoteType = "upVote" | "downVote" | null;
 
@@ -15,15 +16,15 @@ interface PostVoteClientProps {
     postId: string;
     upVoteCount: number;
     downVoteCount: number;
-    userVote: VoteType
+    userVote: VoteType;
+    session?: Session | null;
 }
 
-const PostVoteClient: FC<PostVoteClientProps> = ({postId, userVote,downVoteCount,upVoteCount}) => {
+const PostVoteClient: FC<PostVoteClientProps> = ({postId, userVote,downVoteCount,upVoteCount,session}) => {
   const { loginToast } = useCustomToast();
   const [upVote, setUpVote] = useState(upVoteCount);
   const [downVote, setDownVote] = useState(downVoteCount);
   const [userVoteType, setUserVoteType] = useState(userVote);
-  const preVote = usePrevious(userVote);
 
   useEffect(() => {
       setUpVote(upVoteCount);
@@ -60,7 +61,6 @@ const PostVoteClient: FC<PostVoteClientProps> = ({postId, userVote,downVoteCount
         }
         setUserVoteType(voteType);
       }
-    
       return { previousVote };
     },
     onError: (err, voteType, context) => {
@@ -77,10 +77,18 @@ const PostVoteClient: FC<PostVoteClientProps> = ({postId, userVote,downVoteCount
     },
   })
 
+  const handleVote = (voteType: VoteType) => {
+    if(!session) {
+      loginToast();
+      return;
+    }
+    vote(voteType)
+  }
+
   return (
     <div className="flex items-center">
-      <Button onClick={() => vote('upVote')} variant={'ghost'} className={cn('text-sm flex items-center', userVoteType === 'upVote' ? 'text-green-500' : null)}><ThumbsUpIcon className="size-5" />{upVote}</Button>
-      <Button onClick={() => vote('downVote')} variant={'ghost'} className={cn('text-sm flex items-center', userVoteType === 'downVote' ? 'text-green-500' : null)}><ThumbsDownIcon className="size-5" />{downVote}</Button>
+      <Button onClick={() => handleVote('upVote')} variant={'ghost'} className={cn('text-sm flex items-center', userVoteType === 'upVote' ? 'text-green-500' : null)}><ThumbsUpIcon className="size-5" />{upVote}</Button>
+      <Button onClick={() => handleVote('downVote')} variant={'ghost'} className={cn('text-sm flex items-center', userVoteType === 'downVote' ? 'text-green-500' : null)}><ThumbsDownIcon className="size-5" />{downVote}</Button>
     </div>
   );
 };

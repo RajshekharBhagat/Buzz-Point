@@ -18,7 +18,6 @@ const CustomFeed = async () => {
     .populate("comments")
     .populate("hive")
     .lean();
-  console.log(posts);
   return <PostFeed initialPost={JSON.parse(JSON.stringify(posts))} />;
 };
 

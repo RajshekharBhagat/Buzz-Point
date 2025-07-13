@@ -1,12 +1,12 @@
 "use client";
-
+import { useCustomToast } from "@/hooks/use-custom-toast";
 import { useToast } from "@/hooks/use-toast";
 import { uploadFiles } from "@/lib/uploadthing";
 import { PostCreationRequestType, PostValidator } from "@/lib/validators/post";
 import EditorJS from "@editorjs/editorjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -16,6 +16,7 @@ interface EditorProps {
 }
 
 const Editor = ({ hiveId }: EditorProps) => {
+  const {loginToast} = useCustomToast();
   const {
     register,
     handleSubmit,
@@ -159,7 +160,25 @@ const Editor = ({ hiveId }: EditorProps) => {
       const { data } = await axios.post("/api/post/create", payload);
       return data;
     },
-    onError: () => {
+    onError: (error) => {
+      if(error instanceof AxiosError) {
+          if(error.response?.status === 401) {
+            return loginToast();
+          }
+          if(error.response?.status === 400) {
+            return toast({
+              description: error.response.data.message,
+              variant: 'destructive',
+            })
+          }
+          if(error.response?.status === 422) {
+            return toast({
+              title: "Invalid Post",
+              description: error.response.data.message,
+              variant: 'destructive',
+            })
+          }
+      } 
       toast({
         title: "Something went wrong.",
         description: "Your post failed to  submit. Please try again later.",

@@ -52,7 +52,7 @@ const PostFeed = ({ initialPost, hiveName }: PostFeedProps) => {
           <li key={post._id.toString()} ref={isLastPost ? ref : null}>
             <PostComponent
               post={post}
-              hiveName={post.hive.name}
+              hiveName={hiveName ? hiveName : post.hive.name}
               commentAmt={post.comments.length}
             />
           </li>
