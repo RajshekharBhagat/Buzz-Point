@@ -1,4 +1,5 @@
 import { getAuthSession } from "@/lib/auth";
+import dbConnect from "@/lib/dbConnect";
 import PostModel from "@/models/Post.model";
 import SavedPostModel from "@/models/SavedPost.model";
 
@@ -25,6 +26,7 @@ export async function DELETE(req: Request) {
                { status: 422 }
             );
         }
+        await dbConnect();
         const post = await PostModel.findById(postId).select('_id');
         if(!post) {
             return new Response(

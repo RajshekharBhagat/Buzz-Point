@@ -6,9 +6,8 @@ import { z } from "zod";
 
 export async function POST(req: Request) {
     try {
-        await dbConnect();
-        const session = await getAuthSession();
-        const user = session?.user;
+      const session = await getAuthSession();
+      const user = session?.user;
         if(!session || !user) {
             return new Response(
               JSON.stringify({
@@ -22,6 +21,7 @@ export async function POST(req: Request) {
         const body = await req.json();
         const {name,description} = CreateHiveValidator.parse(body);
 
+        await dbConnect();
         const existHive = await HiveModel.findOne({name: name});
 
         if(existHive) {

@@ -6,9 +6,8 @@ import { z } from "zod";
 
 export async function PATCH(req: Request) {
     try {
-        await dbConnect();
-        const session = await getAuthSession();
-        if(!session) {
+       const session = await getAuthSession();
+       if(!session) {
             return new Response(
                JSON.stringify({
                   success: false,
@@ -16,9 +15,10 @@ export async function PATCH(req: Request) {
                }),
                { status: 401 }
             );
-        }
-        const body = await req.json();
-        const {postId,voteType} = PostVoteValidator.parse(body);
+         }
+         const body = await req.json();
+         const {postId,voteType} = PostVoteValidator.parse(body);
+         await dbConnect();
         const existingVote = await VoteModel.findOne<Vote>({post: postId, user: session.user.id});
         if(existingVote) {
             if(existingVote.type === voteType) {

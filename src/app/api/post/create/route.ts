@@ -17,9 +17,9 @@ export async function POST(req: Request) {
                { status: 401 }
             );
         }
-        await dbConnect();
         const body = await req.json();
         const {title,content,hiveId} = PostValidator.parse(body);
+        await dbConnect();
         const subscriptionExist = await SubscriptionModel.findOne({
             user: session.user.id,
             hive: hiveId,
