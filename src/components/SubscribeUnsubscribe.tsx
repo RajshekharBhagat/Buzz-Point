@@ -32,7 +32,6 @@ const SubscribeUnsubscribeToggle: FC<SubscribeUnsubscribeToggleProps> = ({
       return data;
     },
     onSuccess: (data) => {
-      console.log("success response:", data.message);
       startTransition(() => {
         router.refresh();
       });

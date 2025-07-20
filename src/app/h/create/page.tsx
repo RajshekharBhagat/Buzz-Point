@@ -20,7 +20,7 @@ const Page = () => {
   const { mutate: createHive, isPending } = useMutation({
     mutationFn: async () => {
       const payload: CreateHivePayload = {
-        name: name,
+        name: name.trim().toLowerCase(),
         description: description,
       };
       const { data: response } = await axios.post(
@@ -35,7 +35,7 @@ const Page = () => {
         description: response.message || "Your hive is created successfully.",
         variant: "default",
       });
-      router.push(`/b/${response.data.name}`);
+      router.push(`/h/${response.data.name}`);
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
@@ -49,7 +49,7 @@ const Page = () => {
         if (error.response?.status === 422) {
           return toast({
             title: "Invalid hive name.",
-            description: "Please choose a name between 3 and 21 characters.",
+            description:"Please choose a name between 3 and 21 characters.",
             variant: "destructive",
           });
         }

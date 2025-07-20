@@ -9,9 +9,9 @@ import { getAuthSession } from "@/lib/auth";
 const NavBar = async() => {
   const session = await getAuthSession();
   return (
-    <nav className="fixed inset-0 h-fit bg-green-200/50  backdrop-blur-xl md:backdrop-blur border-b border-green-400 z-[10]">
-      <MaxWidthWrapper className="flex items-center justify-between gap-2 py-3">
-        <div className="h-6 w-36 relative">
+    <nav className="fixed w-[100dvw] top-0 h-fit bg-green-200/50  backdrop-blur-xl md:backdrop-blur border-b border-green-400 z-10">
+      <MaxWidthWrapper className="flex items-center justify-between gap-2 py-2 px-4">
+        <div className="relative aspect-[461/80] w-36">
           <Link href="/">
             <Image src={"/assets/BuzzPoint_Logo.png"} alt="Logo" fill className="object-contain" />
           </Link>
@@ -23,7 +23,6 @@ const NavBar = async() => {
           Sign in
         </Link>
         )}
-        
       </MaxWidthWrapper>
     </nav>
   );

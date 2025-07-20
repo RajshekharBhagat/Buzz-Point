@@ -5,22 +5,24 @@ type UserId = string;
 
 declare module 'next-auth/jwt' {
     interface JWT {
-        id: UserId
-        username?: string
-        name: string
-        email: string
-        picture?: string
+        id: UserId;
+        username?: string;
+        name: string;
+        email: string;
+        picture?: string;
+        username?: string;
     }
 }
 
 declare module 'next-auth' {
     interface Session {
         user: User & {
-            id: UserId
-            username?: string
-            name: string
-            email: string
-            image?: string
+            id: UserId;
+            username?: string;
+            name: string;
+            email: string;
+            image?: string;
+            username?: string;
         }
     }
 }

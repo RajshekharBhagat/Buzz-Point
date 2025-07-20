@@ -79,13 +79,10 @@ const Editor = ({ hiveId }: EditorProps) => {
                 async uploadByFile(file: File) {
                   try {
                     console.log("Uploading File:", file);
-
                     const uploadedFiles = await uploadFiles("imageUploader", {
                       files: [file],
                     });
-
                     console.log("Upload response:", uploadedFiles);
-
                     if (
                       !uploadedFiles ||
                       uploadedFiles.length === 0 ||

@@ -18,7 +18,7 @@ const UserAccountNav: FC<UserAccountNavProps> = ({ user }) => {
     <DropdownMenu>
       <DropdownMenuTrigger>
         <UserAvatar
-          className="h-8 w-8"
+          className="size-5"
           user={{
             name: user.name,
             image: user.image,
@@ -27,24 +27,27 @@ const UserAccountNav: FC<UserAccountNavProps> = ({ user }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-white shadow-md rounded-md" align="end">
         <div className="flex items-center justify-start gap-2 p-2">
-          <div className="flex flex-col">
-            {user.name && <p className="font-medium">{user.name}</p>}
-            {user.email && (
-              <p className="w-[200px] truncate text-sm text-zinc-700">
-                {user.email}
+          <Link href={`/u/${user.username}`} className="flex flex-col">
+            {user.name && <p className="font-medium text-sm">{user.name}</p>}
+            {user.username && (
+              <p className="w-[200px] truncate text-xs text-zinc-700">
+                {user.username}
               </p>
             )}
-          </div>
+          </Link>
         </div>
         <DropdownMenuSeparator/>
         <DropdownMenuItem asChild>
-            <Link href={'/'}>Feed</Link>
+            <Link className="text-sm" href={'/'}>Feed</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-            <Link href={'/h/create'}>Create Community</Link>
+            <Link className="text-sm" href={`/u/${user.username}/saved`}>Saved Posts</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-            <Link href={'/settings'}>Settings</Link>
+            <Link className="text-sm" href={'/h/create'}>Create Community</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+            <Link className="text-sm" href={'/settings'}>Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={(event) => {

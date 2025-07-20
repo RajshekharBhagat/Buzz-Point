@@ -54,11 +54,29 @@ export const authOptions : NextAuthOptions = {
     },
     callbacks: {
         async jwt({token,user}) {
+            await dbConnect();
             if(user && user.name && user.email && user.image) {
                 token.id = user.id;
                 token.name = user.name;
                 token.email = user.email;
                 token.picture = user.image;
+                const dbUser = await UserModel.findOne({ email: user.email });
+                if (dbUser) {
+                    if(!dbUser.username) {
+                        
+                        const emailPrefix = user.email?.split("@")[0];
+                        let username = emailPrefix;
+                        let counter = 1;
+                        
+                        while (await UserModel.findOne({ username })) {
+                            username = `${emailPrefix}${counter++}`;
+                        }
+                        
+                        dbUser.username = username;
+                        await dbUser.save();
+                    }
+                    token.username = dbUser.username;
+                }
             }
             return token;
         },
@@ -68,6 +86,7 @@ export const authOptions : NextAuthOptions = {
                 session.user.email = token.email;
                 session.user.name = token.name;
                 session.user.image = token.picture;
+                session.user.username = token.username;
             }
             return session
         }

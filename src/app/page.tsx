@@ -10,7 +10,7 @@ export default async function Home() {
   const session = await getAuthSession();
   return(
     <MaxWidthWrapper className="pt-5">
-      <h1 className="font-bold text-3xl md:text-4xl">Your Feed</h1>
+      <h1 className="font-bold text-xl md:text-2xl">Your Feed</h1>
       <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-y-4 md:gap-x-4 py-6">
         {session ?  <CustomFeed />:<GeneralFeed /> }
         {/* your hive information */}

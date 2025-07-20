@@ -1,11 +1,13 @@
 import MiniCreatePost from "@/components/MiniCreatePost";
 import PostFeed from "@/components/PostFeed";
+import { buttonVariants } from "@/components/ui/button";
 import { getAuthSession } from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
+import { cn } from "@/lib/utils";
 import HiveModel, { Hive } from "@/models/Hives.model";
 import PostModel, { ExtendedPost } from "@/models/Post.model";
-import { LucideBox } from "lucide-react";
-import { notFound } from "next/navigation";
+import {LucideBox, TriangleAlertIcon } from "lucide-react";
+import Link from "next/link";
 
 
 const page = async ({ params }: {params: Promise<{name: string}>}) => {
@@ -18,7 +20,17 @@ const page = async ({ params }: {params: Promise<{name: string}>}) => {
   const initialPost = await PostModel.find<ExtendedPost>({ hive: hive?._id })
     .select('-__v').populate('author') 
     .lean();
-  if (!hive) return notFound();
+  if (!hive) {
+    return (
+      <div className="relative w-full overflow-hidden">
+        <div className="flex flex-col w-full h-full items-center my-28 gap-6">
+          <TriangleAlertIcon className="text-green-500 size-16" />
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold">Hive not found!</h1>
+          <Link href={'/'} className={cn(buttonVariants({variant:'link'}))}>Go Back</Link>
+        </div>
+      </div>
+    )
+  };
   if(!initialPost) {
     return(
       <>

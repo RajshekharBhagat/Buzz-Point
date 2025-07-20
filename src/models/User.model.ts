@@ -3,7 +3,7 @@ import mongoose, { Document, Model, Schema, Types } from "mongoose";
 export interface User extends Document {
   _id: Types.ObjectId;
   name: string;
-  // username?: string;
+  username?: string;
   email: string;
   password?: string;
   image?:string;
@@ -15,14 +15,11 @@ const UserSchema: Schema<User> = new Schema ({
     type: String,
     required: true
   },
-  // username: {
-  //   type: String,
-  //   required: false,
-  //   // unique: true,
-  //   default: function() {
-  //     return `user_${nanoid(8)}`
-  //   }
-  // },
+  username: {
+    type: String,
+    unique: true,
+    required: false,
+  },
   email: {
     type: String,
     required: true,
