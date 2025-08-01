@@ -12,45 +12,16 @@ import Link from "next/link";
 
 const page = async ({ params }: {params: Promise<{name: string}>}) => {
   const { name } = await params;
-  await dbConnect();
   const session = await getAuthSession();
-  const hive = await HiveModel.findOne<Hive>({ name })
-    .select("name description creator")
-    .lean();
-  const initialPost = await PostModel.find<ExtendedPost>({ hive: hive?._id })
-    .select('-__v').populate('author') 
-    .lean();
-  if (!hive) {
-    return (
-      <div className="relative w-full overflow-hidden">
-        <div className="flex flex-col w-full h-full items-center my-28 gap-6">
-          <TriangleAlertIcon className="text-green-500 size-16" />
-          <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold">Hive not found!</h1>
-          <Link href={'/'} className={cn(buttonVariants({variant:'link'}))}>Go Back</Link>
-        </div>
-      </div>
-    )
-  };
-  if(!initialPost) {
-    return(
-      <>
-      <MiniCreatePost session={session} />
-      <div className="pt-20 flex flex-col items-center justify-center">
-        <LucideBox className="w-20 h-20 text-green-300 animate-bounce" />
-        <span className="text-gray-500">No Posts Yet</span>
-      </div>
-      </>
-    )
-  }
   return (
     <div className="flex flex-col">
       <div className="px-2 py-2">
         <h1 className="text-lg md:text-xl font-semibold">
-          h/{hive.name}
+          h/{name}
         </h1>
       </div>
       <MiniCreatePost session={session} />
-      <PostFeed hiveName={hive.name} initialPost={initialPost ? JSON.parse(JSON.stringify(initialPost)) : null} />
+      <PostFeed type="hive" hiveName={name} />
     </div>
   );
 };

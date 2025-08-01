@@ -66,7 +66,7 @@ const PostComponent = ({ post, hiveName, commentAmt }: PostComponentProps) => {
           <Dot />
           <span className="shrink-0">{formatTimeToNow(post.createdAt)}</span>
         </div>
-        <PostOptions postId={post._id.toString()} author={post.author._id.toString()} />
+        <PostOptions postId={post._id.toString()} author={post.author._id.toString()} hiveName={hiveName} />
       </div>
       <h1 className="text-gray-900 text-sm font-semibold leading-tight">
         <a href={`h/${hiveName}/post/${post._id}`}>{post.title}</a>

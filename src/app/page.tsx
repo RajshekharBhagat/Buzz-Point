@@ -1,6 +1,5 @@
-import CustomFeed from "@/components/CustomFeed";
-import GeneralFeed from "@/components/GeneralFeed";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
+import PostFeed from "@/components/PostFeed";
 import { buttonVariants } from "@/components/ui/button";
 import { getAuthSession } from "@/lib/auth";
 import { HomeIcon } from "lucide-react";
@@ -12,8 +11,7 @@ export default async function Home() {
     <MaxWidthWrapper className="pt-5">
       <h1 className="font-bold text-xl md:text-2xl">Your Feed</h1>
       <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-y-4 md:gap-x-4 py-6">
-        {session ?  <CustomFeed />:<GeneralFeed /> }
-        {/* your hive information */}
+        <PostFeed type="feed" />
         <div className="lg:sticky lg:top-20 my-10 rounded-lg overflow-hidden h-fit border border-emerald-200 order-last">
           <div className="bg-emerald-100 px-6 py-4">
             <p className="flex items-center py-3 font-semibold gap-1.5"><HomeIcon className="w-4 h-4" />Home</p>

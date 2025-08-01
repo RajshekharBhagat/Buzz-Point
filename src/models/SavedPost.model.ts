@@ -3,7 +3,7 @@ import mongoose, { Schema, Types } from "mongoose";
 import './User.model';
 import './Post.model';
 
-interface SavedPost extends Document {
+export interface SavedPost extends Document {
     user: Types.ObjectId,
     post: Types.ObjectId,
 }

@@ -20,8 +20,8 @@ const style = {
 
 function CustomImageRenderer(data: any) {
     const src = data.file.url;
-    return <div className="relative min-h-[15rem] w-full">
-        <Image alt="Image" className="object-contain" fill src={src} />
+    return <div className="relative">
+        <Image alt="Image" className="object-cover" width={150} height={150} src={src} />
     </div>
 }
 
