@@ -6,7 +6,8 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect } from "react";
 import PostComponent from "./PostComponent";
-import { Loader2Icon } from "lucide-react";
+import { FrownIcon, Loader2Icon } from "lucide-react";
+import { Button, buttonVariants } from "./ui/button";
 
 interface PostFeedProps {
   type?: 'feed' | 'hive' | 'user-posts' | 'saved',
@@ -53,9 +54,7 @@ const PostFeed = ({ type='feed',hiveName,username,fields='hive,author,comments'}
     return `/api/post?${params.toString()}`
   };
 
-
-
-  const { data,error, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+  const { data,error,refetch,status, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, } =
     useInfiniteQuery({
       queryKey: getQueryKey(),
       queryFn: async ({ pageParam = 1 }) => {
@@ -81,18 +80,23 @@ const PostFeed = ({ type='feed',hiveName,username,fields='hive,author,comments'}
     },[entry,fetchNextPage,hasNextPage,isFetchingNextPage])
 
   const posts = data?.pages.flatMap((page) => page) ?? [];
+
   if (error) {
     return (
-      <div className="col-span-2 flex justify-center items-center p-8">
-        <div className="text-center">
-          <p className="text-red-500 mb-2">Failed to load posts</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="text-blue-500 hover:underline"
+      <div className="w-full flex flex-col items-center justify-center h-full">
+        <div className="flex items-center gap-4 mb-4">
+        <FrownIcon className="text-green-400 size-20" />
+        <span className="flex flex-col max-w-sm">
+          <h1 className="text-green-400 text-2xl font-semibold">Sorry for the inconvenience</h1>
+          <p className="text-gray-700 text-sm">We are trying hard to solve the issue. Please try after sometime.</p>
+        </span>
+        </div>
+          <Button 
+            onClick={() => refetch()} 
+            className={buttonVariants({variant:'default'})}
           >
             Try again
-          </button>
-        </div>
+          </Button>
       </div>
     );
   }
@@ -119,7 +123,7 @@ const PostFeed = ({ type='feed',hiveName,username,fields='hive,author,comments'}
 
 
   return (
-    <ul className="col-span-2">
+    <ul>
       {posts.map((post, index) => {
         const isLastPost = index === posts.length - 1;
         return (

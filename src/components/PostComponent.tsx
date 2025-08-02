@@ -2,7 +2,7 @@
 import { formatTimeToNow } from "@/lib/utils";
 import { ExtendedPost } from "@/models/Post.model";
 import { Dot, MessageSquare } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import EditorOutput from "./EditorOutput";
 import PostVoteClient from "./PostVoteClient";
 import axios from "axios";
@@ -11,6 +11,8 @@ import { ApiResponse } from "../../types/ApiResponse";
 import Link from "next/link";
 import PostOptions from "./PostOptions";
 import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 interface PostComponentProps {
   hiveName: string;
@@ -18,75 +20,146 @@ interface PostComponentProps {
   commentAmt: number;
 }
 
-const PostComponent = ({ post, hiveName, commentAmt }: PostComponentProps) => {
-  const {data: session} = useSession();
-  const [upVoteCount, setUpVoteCount] = useState<number>(0);
-  const [downVoteCount, setDownVoteCount] = useState<number>(0);
-  const [userVote, setUserVote] = useState<"upVote" | "downVote" | null>(null);
+interface VoteData {
+  upVoteCount: number;
+  downVoteCount: number;
+  userVote: "upVote" | "downVote" | null;
+}
 
-  useEffect(() => {
-    const fetchVotes = async () => {
+const PostComponent = ({ post, hiveName, commentAmt }: PostComponentProps) => {
+  const {toast} = useToast();
+  const { data: session } = useSession();
+  const postId = post._id.toString();
+  const [voteState, setVoteState] = useState<VoteData>({
+    upVoteCount: 0,
+    downVoteCount: 0,
+    userVote: null,
+  });
+
+  const {
+    data: votesData,
+    isLoading: votesLoading,
+    error: votesError,
+  } = useQuery({
+    queryKey: ["post-votes", post._id.toString()],
+    queryFn: async () => {
       try {
         const { data: response } = await axios.get<ApiResponse>(
-          `/api/vote?postId=${post._id}`
+          `/api/vote?postId=${postId}`
         );
-        if (response.success) {
-          const votes = response.data as Vote[];
-          const upVotes = votes.filter((vote) => vote.type === "upVote").length;
-          const downVotes = votes.filter(
-            (vote) => vote.type === "downVote"
-          ).length;
-          if(session) {
-            const userVote = votes.find((vote) => vote.user === session?.user.id)?.type;
-            setUserVote(userVote ?? null);
-          }
-          setUpVoteCount(upVotes);
-          setDownVoteCount(downVotes);
+        if(!response.success) {
+          console.log(response.message)
+          toast({
+            title: "Voting Client is Offline. Please try after sometime.",
+            variant: 'destructive',
+          })
+          return []
         }
+        return response.data as Vote[];
       } catch (error) {
-        console.error("Error fetching votes: ", error);
+        console.error("Error fetching votes:", error);
+        return [];
       }
-    };
-    fetchVotes();
-  }, [session?.user.id,post._id,session]);
+    },
+    enabled: !!postId,
+    staleTime: 30 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  useEffect(() => {
+    if (votesData) {
+      console.log(votesData)
+      const upVotes = votesData.filter((vote) => vote.type === "upVote").length;
+      const downVotes = votesData.filter(
+        (vote) => vote.type === "downVote"
+      ).length;
+
+      let userVote: "upVote" | "downVote" | null = null;
+      if (session?.user.id) {
+        const userVoteData = votesData.find(
+          (vote) => vote.user === session.user.id
+        );
+        userVote = userVoteData?.type ?? null;
+      }
+
+      setVoteState({
+        upVoteCount: upVotes,
+        downVoteCount: downVotes,
+        userVote,
+      });
+    }
+  }, [votesData, session?.user.id]);
+
+  const updateVoteState = useCallback((newVoteState: Partial<VoteData>) => {
+    setVoteState((prev) => ({ ...prev, ...newVoteState }));
+  }, []);
+
+  const displayHiveName = hiveName || post.hive?.name || "unknown";
+
+  const authorUsername = post.author?.username || "unknown";
+  const authorId = post.author?._id?.toString() || "";
+
   return (
-    <div className="bg-white px-4 py-5 flex flex-col space-y-5 rounded-lg shadow-md mt-5">
+    <div className="bg-white px-4 py-5 flex flex-col space-y-5 rounded-lg shadow-md mt-5 hover:shadow-lg transition-shadow duration-200">
       <div className="flex items-center justify-between gap-0.5 text-xs md:text-sm text-gray-500">
-        <div className="flex items-center max-w-[80%]">
-          {hiveName ? (
+        <div className="flex items-center max-w-[80%] min-w-0">
+          {displayHiveName && displayHiveName !== "unknown" ? (
             <Link
-              href={`/h/${hiveName}`}
-              className="underline underline-offset-2 font-semibold text-gray-900 hover:text-gray-700"
+              href={`/h/${displayHiveName}`}
+              className="underline underline-offset-2 font-semibold text-gray-900 hover:text-gray-700 shrink-0"
             >
-              h/{hiveName}
+              h/{displayHiveName}
             </Link>
-          ) : null}
-          <Dot />
-          <span className="truncate">Posted by u/{post.author.username}</span>
-          <Dot />
+          ) : (
+            <span className="font-semibold text-gray-900 shrink-0">
+              h/unknown
+            </span>
+          )}
+          <Dot className="shrink-0" />
+          <span className="truncate">Posted by u/{authorUsername}</span>
+          <Dot className="shrink-0" />
           <span className="shrink-0">{formatTimeToNow(post.createdAt)}</span>
         </div>
-        <PostOptions postId={post._id.toString()} author={post.author._id.toString()} hiveName={hiveName} />
+        <PostOptions
+          postId={postId}
+          author={authorId}
+          hiveName={displayHiveName}
+        />
       </div>
       <h1 className="text-gray-900 text-sm font-semibold leading-tight">
-        <a href={`h/${hiveName}/post/${post._id}`}>{post.title}</a>
+        <Link
+          href={`/h/${displayHiveName}/post/${postId}`}
+          className="hover:text-gray-700 transition-colors duration-150"
+        >
+          {post.title}
+        </Link>
       </h1>
       <EditorOutput content={post.content} />
       <div className="flex items-center justify-between">
-        <a
-          className=" flex items-center gap-2"
-          href={`/h/${hiveName}/post/${post._id}`}
+        <Link
+          href={`/h/${displayHiveName}/post/${postId}`}
+          className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors duration-150"
         >
-          <MessageSquare className="" />
-          {commentAmt} Comments
-        </a>
-        <PostVoteClient
-          downVoteCount={downVoteCount}
-          upVoteCount={upVoteCount}
-          userVote={userVote}
-          postId={post._id.toString()}
-          session={session}
-        />
+          <MessageSquare className="w-4 h-4" />
+          <span className="text-sm">
+            {commentAmt} {commentAmt === 1 ? "Comment" : "Comments"}
+          </span>
+        </Link>
+
+        {votesLoading ? (
+          <div className="flex items-center gap-2">
+            <div className="w-16 h-8 bg-gray-200 animate-pulse rounded"></div>
+          </div>
+        ) : (
+          <PostVoteClient
+            downVoteCount={voteState.downVoteCount}
+            upVoteCount={voteState.upVoteCount}
+            userVote={voteState.userVote}
+            postId={postId}
+            session={session}
+            onVoteUpdate={updateVoteState}
+          />
+        )}
       </div>
     </div>
   );

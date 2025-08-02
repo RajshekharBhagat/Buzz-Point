@@ -113,7 +113,6 @@ export async function GET(req: Request) {
   try {
     await dbConnect();
     const url = new URL(req.url);
-    console.log("Received URL: ", url);
     const session = await getAuthSession();
 
     const { limit, page, type, fields, hiveName, username } = querySchema.parse(
