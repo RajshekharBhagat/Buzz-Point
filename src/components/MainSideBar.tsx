@@ -7,7 +7,7 @@ import TopHives from "./TopHives";
 
 const MainSideBar = () => {
   return (
-    <div className="lg:sticky lg:top-20 my-5 h-fit flex flex-col gap-10">
+    <div className="lg:sticky lg:top-0 my-5 h-fit flex flex-col gap-10">
       <div className=" border border-emerald-200 rounded-lg shadow-lg shadow-black/10">
         <div className="bg-emerald-100 px-6 py-4">
           <p className="flex items-center py-3 font-semibold gap-1.5">

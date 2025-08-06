@@ -1,6 +1,6 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import SubscribeUnsubscribeToggle from "@/components/SubscribeUnsubscribe";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { getAuthSession } from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
 import { cn } from "@/lib/utils";
@@ -78,6 +78,7 @@ const Layout = async ({
                 hiveId={hive._id.toString()}
                 isSubscribed={isSubscribed}
               />
+              <Link href={`/h/${name || hive.name}/chatroom`} className={buttonVariants({variant: "default",className:'w-full'})}>ChatRoom</Link>
             </dl>
           </div>
         </div>

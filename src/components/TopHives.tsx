@@ -16,20 +16,20 @@ const TopHives = () => {
               <Link
                 key={hive._id.toString()}
                 href={`/h/${hive.name}`}
-                className="w-full flex items-center justify-between px-4 py-1 rounded-xl bg-emerald-100 overflow-hidden group transition-all"
+                className="w-full flex flex-col items-center justify-between px-4 py-1 rounded-xl bg-green-100 hover:bg-green-200 overflow-hidden group transition-all"
               >
-                <span className="flex flex-col gap-2">
+                <span className="flex w-full items-center justify-between gap-2">
                   <h1 className="text-green-800 font-semibold">{hive.name}</h1>
-                  <p className="text-gray-700 text-sm max-h-0 group-hover:max-h-[40px] transition-all duration-500">
-                    {hive.description}
-                  </p>
+                  <span className="flex items-center gap-2">
+                    <p className="text-green-700 text-sm">
+                      Followers: {hive.subscriberCount}
+                    </p>
+                    <ChevronRightIcon className="text-green-500 translate-x-[100px]  group-hover:translate-x-0 transition-all duration-300" />
+                  </span>
                 </span>
-                <span className="flex items-center gap-2">
-                  <p className="text-green-700 text-sm">
-                    Followers: {hive.subscriberCount}
-                  </p>
-                  <ChevronRightIcon className="text-green-500 translate-x-[100px] group-hover:translate-x-0 transition-all duration-300" />
-                </span>
+                <p className="text-gray-700 text-sm max-h-0 group-hover:max-h-[20px] w-full transition-all duration-300">
+                  {hive.description}
+                </p>
               </Link>
             ))}
           </ul>

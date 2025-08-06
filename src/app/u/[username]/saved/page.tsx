@@ -5,10 +5,10 @@ import { getAuthSession } from '@/lib/auth';
 const Page = () => {
   
   return (
-    <MaxWidthWrapper className='relative my-10'>
+    <div className='relative my-10'>
       <h1 className='text-xl md:text-xl font-semibold mb-5'>Saved Posts</h1>
       <PostFeed type='saved' />
-    </MaxWidthWrapper>
+    </div>
   )
 }
 

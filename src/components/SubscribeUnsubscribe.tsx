@@ -40,30 +40,12 @@ const SubscribeUnsubscribeToggle: FC<SubscribeUnsubscribeToggleProps> = ({
         description: `You are now subscribed to h/${hiveName}`,
       });
     },
-    onError: (error: AxiosError) => {
+    onError: (error) => {
       console.log(`Error Subscribing to the hive: ${error}`);
-      if (error.response) {
-        const { data, status } = error.response as {
-          data: ApiResponse;
-          status: number;
-        };
-        if (status === 401) {
-          return loginToast();
-        }
-        if (status === 409) {
-          return toast({
-            title: "Already Subscribed.",
-            description: data.message,
-            variant: "destructive",
-          });
-        }
-        if (status === 422) {
-          return toast({
-            title: "Invalid Input.",
-            description: data.message,
-            variant: "destructive",
-          });
-        }
+      if(error instanceof AxiosError) {
+        return toast({
+          title: error.response?.data.message,
+        })
       }
       toast({
         title: "Something Went Wrong.",
@@ -90,30 +72,13 @@ const SubscribeUnsubscribeToggle: FC<SubscribeUnsubscribeToggleProps> = ({
         description: `You are now unsubscribed to ${hiveName}`,
       });
     },
-    onError: (error: AxiosError) => {
+    onError: (error) => {
       console.log("Error during unsubscribing", error);
-      if (error.response) {
-        const { data, status } = error.response as {
-          data: ApiResponse;
-          status: number;
-        };
-        if (status === 401) {
-          return loginToast();
-        }
-        if (status === 409) {
-          return toast({
-            title: "Already Unsubscribed",
-            description: data.message,
-            variant: "destructive",
-          });
-        }
-        if (status === 422) {
-          return toast({
-            title: "Invalid Input",
-            description: data.message,
-            variant: "destructive",
-          });
-        }
+      if(error instanceof AxiosError) {
+        return toast({
+          title: error.response?.data.message,
+          variant: "destructive",
+        })
       }
       toast({
         title: 'Something went wrong',

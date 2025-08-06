@@ -56,15 +56,12 @@ const PostVoteClient: FC<PostVoteClientProps> = ({
       const { data } = await axios.patch("/api/vote", payload);
       return { voteType, data };
     },
-
     onMutate: async (voteType: VoteType) => {
-      // Store previous state for rollback
       const previousState = {
         upVote,
         downVote,
         userVoteType,
       };
-
       if (userVoteType === voteType) {
         if (voteType === "upVote") {
           setUpVote((prev) => prev - 1);
@@ -86,10 +83,8 @@ const PostVoteClient: FC<PostVoteClientProps> = ({
         }
         setUserVoteType(voteType);
       }
-
       return { previousState };
     },
-
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["post-votes", postId],

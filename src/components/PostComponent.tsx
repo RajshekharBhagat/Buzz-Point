@@ -5,14 +5,10 @@ import { Dot, MessageSquare } from "lucide-react";
 import React, { useEffect, useState, useCallback } from "react";
 import EditorOutput from "./EditorOutput";
 import PostVoteClient from "./PostVoteClient";
-import axios from "axios";
-import { Vote } from "@/models/Vote.model";
-import { ApiResponse } from "../../types/ApiResponse";
 import Link from "next/link";
 import PostOptions from "./PostOptions";
 import { useSession } from "next-auth/react";
-import { useQuery } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
+import { useGetVotesByPostId } from "@/hooks/useVotes";
 
 interface PostComponentProps {
   hiveName: string;
@@ -27,7 +23,6 @@ interface VoteData {
 }
 
 const PostComponent = ({ post, hiveName, commentAmt }: PostComponentProps) => {
-  const {toast} = useToast();
   const { data: session } = useSession();
   const postId = post._id.toString();
   const [voteState, setVoteState] = useState<VoteData>({
@@ -35,46 +30,18 @@ const PostComponent = ({ post, hiveName, commentAmt }: PostComponentProps) => {
     downVoteCount: 0,
     userVote: null,
   });
-
-  const {
-    data: votesData,
-    isLoading: votesLoading,
-    error: votesError,
-  } = useQuery({
-    queryKey: ["post-votes", post._id.toString()],
-    queryFn: async () => {
-      try {
-        const { data: response } = await axios.get<ApiResponse>(
-          `/api/vote?postId=${postId}`
-        );
-        if(!response.success) {
-          console.log(response.message)
-          toast({
-            title: "Voting Client is Offline. Please try after sometime.",
-            variant: 'destructive',
-          })
-          return []
-        }
-        return response.data as Vote[];
-      } catch (error) {
-        console.error("Error fetching votes:", error);
-        return [];
-      }
-    },
-    enabled: !!postId,
-    staleTime: 30 * 1000,
-    refetchOnWindowFocus: false,
-  });
+  
+  const {data: votesData, isLoading: votesLoading} = useGetVotesByPostId(postId);
 
   useEffect(() => {
     if (votesData) {
-      console.log(votesData)
       const upVotes = votesData.filter((vote) => vote.type === "upVote").length;
       const downVotes = votesData.filter(
         (vote) => vote.type === "downVote"
       ).length;
 
       let userVote: "upVote" | "downVote" | null = null;
+
       if (session?.user.id) {
         const userVoteData = votesData.find(
           (vote) => vote.user === session.user.id
@@ -95,7 +62,6 @@ const PostComponent = ({ post, hiveName, commentAmt }: PostComponentProps) => {
   }, []);
 
   const displayHiveName = hiveName || post.hive?.name || "unknown";
-
   const authorUsername = post.author?.username || "unknown";
   const authorId = post.author?._id?.toString() || "";
 
@@ -116,7 +82,12 @@ const PostComponent = ({ post, hiveName, commentAmt }: PostComponentProps) => {
             </span>
           )}
           <Dot className="shrink-0" />
-          <span className="truncate">Posted by u/{authorUsername}</span>
+          <Link
+            href={`/u/${authorUsername}`}
+            className="truncate hover:text-black"
+          >
+            Posted by u/{authorUsername}
+          </Link>
           <Dot className="shrink-0" />
           <span className="shrink-0">{formatTimeToNow(post.createdAt)}</span>
         </div>

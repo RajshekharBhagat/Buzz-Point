@@ -1,12 +1,9 @@
 "use client";
-import { INFINITE_SCROLLING_PAGINATION_RESULTS } from "@/config";
-import { ExtendedPost } from "@/models/Post.model";
+import { useInfinitePosts } from "@/hooks/use-post";
 import { useIntersection } from "@mantine/hooks";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { FrownIcon, Loader2Icon } from "lucide-react";
 import { useEffect } from "react";
 import PostComponent from "./PostComponent";
-import { FrownIcon, Loader2Icon } from "lucide-react";
 import { Button, buttonVariants } from "./ui/button";
 
 interface PostFeedProps {
@@ -17,73 +14,33 @@ interface PostFeedProps {
 }
 
 const PostFeed = ({ type='feed',hiveName,username,fields='hive,author,comments'}: PostFeedProps) => {
+  
   const { ref, entry } = useIntersection({
     root: null,
     threshold: 1,
   });
 
-  const getQueryKey = () => {
-    const baseKey = ['infinite-posts'];
-    switch(type) {
-      case 'hive':
-        return [...baseKey,'hive',hiveName];
-      case 'saved':
-        return [...baseKey, 'saved'];
-      case 'user-posts':
-        return [...baseKey, 'user-posts',username];
-      case 'feed':
-        default:
-          return [...baseKey,'feed']
-    }
-  }
-
-  const buildQueryString = (pageParam: number) => {
-    const params = new URLSearchParams({
-      limit: INFINITE_SCROLLING_PAGINATION_RESULTS.toString(),
-      page: pageParam.toString(),
-      type,
-      fields,
-    });
-
-    if(type === 'hive' && hiveName) {
-      params.append('hiveName', hiveName);
-    }
-    if(type === 'user-posts' && username) {
-      params.append('username',username);
-    }
-    return `/api/post?${params.toString()}`
-  };
-
-  const { data,error,refetch,status, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, } =
-    useInfiniteQuery({
-      queryKey: getQueryKey(),
-      queryFn: async ({ pageParam = 1 }) => {
-        const query = buildQueryString(pageParam);
-        const { data: response } = await axios.get(query);
-        return response.posts as ExtendedPost[];
-      },
-      initialPageParam: 1,
-      getNextPageParam: (lastPage,pages) => {
-        if(lastPage.length < INFINITE_SCROLLING_PAGINATION_RESULTS) {
-          return undefined;
-        }
-        return pages.length + 1;
-      },
-      refetchOnWindowFocus: type === 'saved',
-      staleTime: type === 'saved' ? 0 : 5 * 60 * 1000,
-    });
-
-    useEffect(() => {
-      if(entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage()
-      }
-    },[entry,fetchNextPage,hasNextPage,isFetchingNextPage])
+  const {
+    data,
+    error,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+  } = useInfinitePosts({ type, hiveName, username, fields });
 
   const posts = data?.pages.flatMap((page) => page) ?? [];
 
+  useEffect(() => {
+    if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
+
   if (error) {
     return (
-      <div className="w-full flex flex-col items-center justify-center h-full">
+      <div className="w-full flex flex-col items-center justify-center h-full p-6 bg-white  rounded-xl shadow-md shadow-black/20">
         <div className="flex items-center gap-4 mb-4">
         <FrownIcon className="text-green-400 size-20" />
         <span className="flex flex-col max-w-sm">
