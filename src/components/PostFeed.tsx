@@ -5,6 +5,7 @@ import { FrownIcon, Loader2Icon } from "lucide-react";
 import { useEffect } from "react";
 import PostComponent from "./PostComponent";
 import { Button, buttonVariants } from "./ui/button";
+import PostSkeleton from "./PostSkeleton";
 
 interface PostFeedProps {
   type?: 'feed' | 'hive' | 'user-posts' | 'saved',
@@ -58,6 +59,10 @@ const PostFeed = ({ type='feed',hiveName,username,fields='hive,author,comments'}
     );
   }
 
+  if(isLoading) {
+    return <PostSkeleton />
+  }
+
   if (!isLoading && posts.length === 0) {
     const getEmptyMessage = () => {
       switch (type) {
@@ -94,9 +99,7 @@ const PostFeed = ({ type='feed',hiveName,username,fields='hive,author,comments'}
         );
       })}
       {isFetchingNextPage && (
-        <li className="flex justify-center my-10">
-          <Loader2Icon className="animate-spin size-10 text-green-300" />
-        </li>
+       <PostSkeleton />
       )}
       {isLoading && posts.length === 0 && (
         <li className="flex justify-center p-4">

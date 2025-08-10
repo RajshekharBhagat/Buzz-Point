@@ -2,6 +2,7 @@
 import { useToast } from "@/hooks/use-toast";
 import { useGetUserByUsername } from "@/hooks/useUser";
 import UserAvatar from "./UserAvatar";
+import UserPageSideBarSkeleton from "./UserPageSidebarSkeleton";
 
 const UserPageSideBar = ({ username }: { username: string }) => {
   const { data: user, isLoading: isUserLoading } =
@@ -24,9 +25,7 @@ const UserPageSideBar = ({ username }: { username: string }) => {
     }
   };
   if (isUserLoading) {
-    return (
-      <div className="flex flex-col w-full items-center justify-center h-[400px] mt-7 rounded-lg shadow-md shadow-black/20 bg-zinc-100 animate-pulse"></div>
-    );
+    return <UserPageSideBarSkeleton />
   }
   return (
     <>
