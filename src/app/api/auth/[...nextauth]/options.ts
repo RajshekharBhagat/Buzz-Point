@@ -6,6 +6,7 @@ import GoogleProvider from 'next-auth/providers/google'
 import clientPromise from "@/lib/mongoDB_Client";
 import CredentialsProvider  from "next-auth/providers/credentials";
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken';
 
 export const authOptions : NextAuthOptions = {
     adapter:MongoDBAdapter(clientPromise),
@@ -87,6 +88,7 @@ export const authOptions : NextAuthOptions = {
                 session.user.name = token.name;
                 session.user.image = token.picture;
                 session.user.username = token.username;
+                session.accessToken = jwt.sign({id: token.id, email: token.email},process.env.NEXTAUTH_SECRET!)
             }
             return session
         }

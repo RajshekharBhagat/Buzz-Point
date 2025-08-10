@@ -1,5 +1,7 @@
 import { Document } from "mongodb";
 import mongoose, { Schema, Types } from "mongoose";
+import './User.model';
+import './Hives.model';
 
 export interface Subscription extends Document {
     user: Types.ObjectId;

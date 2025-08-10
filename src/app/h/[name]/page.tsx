@@ -1,5 +1,4 @@
 import MiniCreatePost from "@/components/MiniCreatePost";
-import OnlineUsers from "@/components/OnlineUsers";
 import PostFeed from "@/components/PostFeed";
 import { getAuthSession } from "@/lib/auth";
 
@@ -14,7 +13,6 @@ const page = async ({ params }: {params: Promise<{name: string}>}) => {
         <h1 className="text-lg md:text-xl font-semibold">
           h/{name}
         </h1>
-        <OnlineUsers hiveName={name} />
       </div>
       <MiniCreatePost session={session} />
       <PostFeed type="hive" hiveName={name} />

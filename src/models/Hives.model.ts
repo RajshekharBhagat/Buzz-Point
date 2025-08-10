@@ -2,7 +2,7 @@ import mongoose, { Document, Schema, Types } from "mongoose";
 
 
 export interface Hive extends Document {
-    _id: Types.ObjectId;
+    _id: string;
     name: string;
     description?: string;
     creator: Types.ObjectId;

@@ -1,31 +1,35 @@
 "use client";
+
+import { useEffect, useState } from "react";
 import { initSocket } from "@/lib/socket";
-import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
-const OnlineUsers = ({ hiveName }: { hiveName: string }) => {
-  const [userOnline, setUserOnline] = useState<number>(0);
+interface Props {
+  hiveId: string;
+}
 
+export default function OnlineUsers({ hiveId }: Props) {
+  const [count, setCount] = useState(0);
+  const {data: session, status} =  useSession();
   useEffect(() => {
-    const socket = initSocket();
+    if(status !== 'authenticated') return;
+    const socket = initSocket(session?.accessToken);
+    socket.emit("join-hive", hiveId);
 
-    socket.emit("join-hive", hiveName);
-
-    socket.on(`hiveUserCount:${hiveName}`, (count: number) => {
-      console.log(`Users in ${hiveName}: ${count}`);
-      setUserOnline(count);
+    socket.on(`hiveOnlineMembers:${hiveId}`, (newCount: number) => {
+      setCount(newCount);
     });
 
     return () => {
-       socket.emit('leave-hive',hiveName);
-       socket.off(`hiveUserCount:${hiveName}`)
+      socket.emit("leave-hive", hiveId);
+      socket.off(`hiveOnlineMembers:${hiveId}`);
     };
-  }, [hiveName]);
-  return <div className="shrink-0 bg-green-200 px-3 py-2 rounded-xl">
-    <div className="flex items-center gap-2">
-        <h1 className="text-green-800 text-sm font-semibold">Members Online:</h1>
-        <p className="text-green-700 text-sm font-semibold">{userOnline}</p>
-    </div>
-  </div>;
-};
+  }, [hiveId, status,session?.accessToken]);
 
-export default OnlineUsers;
+  return (
+    <div className="flex justify-between gap-x-4 py-3">
+      <dt className="text-gray-500">Online</dt>
+      <dd className="text-gray-700">{count}</dd>
+    </div>
+  );
+}

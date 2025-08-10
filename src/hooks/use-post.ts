@@ -4,6 +4,7 @@ import { ApiResponse } from "../../types/ApiResponse";
 import { useToast } from "./use-toast";
 import { INFINITE_SCROLLING_PAGINATION_RESULTS } from "@/config";
 import { ExtendedPost } from "@/models/Post.model";
+import { Session } from "inspector/promises";
 
 
 interface UseInfinitePostsProps {
@@ -70,14 +71,14 @@ export const useInfinitePosts = ({
 };
 
 
-export const useIsPostSaved = (postId: string, enabled: boolean = true) => {
+export const useIsPostSaved = (postId: string, enabled: boolean = false) => {
   return useQuery({
     queryKey: ["isPostSaved", postId],
     queryFn: async () => {
       const res = await axios.get(`/api/post/isSaved?postId=${postId}`);
       return res.data.isSaved as boolean;
     },
-    enabled: enabled && !!postId,
+    enabled: enabled,
     staleTime: 1000 * 60 * 5,
   });
 };

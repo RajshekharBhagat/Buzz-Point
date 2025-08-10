@@ -1,6 +1,5 @@
 import { getAuthSession } from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
-import { HiveSubscriptionValidator } from "@/lib/validators/hive";
 import SubscriptionModel from "@/models/Subscription.model";
 import { z } from "zod";
 
@@ -18,8 +17,16 @@ export async function POST(req: Request) {
             });
         }
 
-        const body = await req.json();
-        const {hiveId} = HiveSubscriptionValidator.parse(body);
+        const {hiveId} = await req.json();
+        if(!hiveId) {
+            return new Response(
+               JSON.stringify({
+                  success: false,
+                  message: "Hive ID is required.",
+               }),
+               { status: 422 }
+            );
+        }
         await dbConnect();
         const subscriptionExist = await SubscriptionModel.findOne({
             hive: hiveId,

@@ -19,15 +19,15 @@ const TopHives = () => {
                 className="w-full flex flex-col items-center justify-between px-4 py-1 rounded-xl bg-green-100 hover:bg-green-200 overflow-hidden group transition-all"
               >
                 <span className="flex w-full items-center justify-between gap-2">
-                  <h1 className="text-green-800 font-semibold">{hive.name}</h1>
+                  <h1 className="text-green-800 font-semibold text-xs md:text-sm">{hive.name}</h1>
                   <span className="flex items-center gap-2">
-                    <p className="text-green-700 text-sm">
+                    <p className="text-green-700 text-xs shrink-0">
                       Followers: {hive.subscriberCount}
                     </p>
-                    <ChevronRightIcon className="text-green-500 translate-x-[100px]  group-hover:translate-x-0 transition-all duration-300" />
+                    <ChevronRightIcon className="text-green-500 max-w-0 group-hover:max-w-10 translate-x-[100px]  group-hover:translate-x-0 transition-all duration-300" />
                   </span>
                 </span>
-                <p className="text-gray-700 text-sm max-h-0 group-hover:max-h-[20px] w-full transition-all duration-300">
+                <p className="text-gray-500 opacity-0 group-hover:opacity-100 text-xs max-h-0 group-hover:max-h-32 w-full transition-all duration-300">
                   {hive.description}
                 </p>
               </Link>

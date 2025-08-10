@@ -1,27 +1,17 @@
 import { io, Socket } from "socket.io-client";
-
 let socket: Socket | null = null;
 
-export const initSocket = () => {
+export function initSocket(token?: string) {
   if (!socket) {
-    socket = io('https://buzz-point-socket-server.onrender.com', {
-      transports: ["websocket"],
-      autoConnect: true,
+    socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string , {
+      auth: {
+        token: token
+      }
     });
   }
-  socket.on("connect", () => {
-    console.log("Connected to socket server: ", socket?.id);
-  });
-  socket.on("disconnect", () => {
-    console.log("Disconnected to the socket server");
-  });
-  return socket
-};
+  return socket;
+}
 
-
-export const getSocket = () => {
-    if(!socket) {
-        throw new Error("Socket is not initialized. Call the initSocket() first");
-    }
-    return socket;
+export function getSocket() {
+  return socket;
 }
