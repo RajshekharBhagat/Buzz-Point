@@ -20,7 +20,7 @@ const HiveSidebarSkeleton = () => {
           <Skeleton className="h-4 w-28" />
         </div>
         <div className="pt-4">
-          <Skeleton className="h-9 w-full rounded-md" />
+          <Skeleton className="h-9 w-full rounded-md" />    
         </div>
         <div className="pt-3">
           <Skeleton className="h-9 w-full rounded-md" />

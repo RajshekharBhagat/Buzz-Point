@@ -99,7 +99,7 @@ const MessageBox = ({ messages, userId }: MessageBoxProps) => {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto bg-gray-50">
+    <div className="flex-1 overflow-y-auto bg-white">
       <div className="px-4 py-2">
         {messages.map((message, i) => {
           const isOwnMessage = userId === message.user.toString();
@@ -116,7 +116,6 @@ const MessageBox = ({ messages, userId }: MessageBoxProps) => {
 
           return (
             <React.Fragment key={i}>
-              {/* Date Separator */}
               {showDateSeparator && (
                 <div className="flex justify-center my-4">
                   <div className="bg-white px-3 py-1 rounded-full text-xs font-medium text-gray-500 shadow-sm border">

@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["editorjs", "Unsub"]
+  "cSpell.words": ["editorjs", "Unsub"],
+  "postman.settings.dotenv-detection-notification-visibility": false
 }

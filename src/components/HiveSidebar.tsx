@@ -34,7 +34,7 @@ const HiveSidebar = ({ hiveName }: { hiveName: string }) => {
     );
   }
   return (
-    <div className="sticky top-20 hidden md:block h-fit overflow-hidden shadow-md order-first md:order-last rounded-lg">
+    <div className="sticky top-14 hidden md:block h-fit overflow-hidden shadow-md order-first md:order-last rounded-lg">
       <div className="px-6 bg-green-100 py-4">
         <p className="text-zinc-900 font-semibold">
           About h/{hiveDetails.name}
